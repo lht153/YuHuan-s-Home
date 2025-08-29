@@ -17,7 +17,7 @@
 
 </head>
 
-	  <style>
+  <style>
     :root {
       --bar-height: 30px;           /* 公告栏高度 */
       --scroll-duration: 20s;       /* 完整滚动一轮的时间 */
@@ -32,12 +32,13 @@
       position: fixed;
       inset: 0 0 auto 0;
       height: var(--bar-height);
-      background: transparent;      /* 背景透明 */
+      background: rgba(0,0,0,0.3);  /* 半透明背景，避免影响页面模糊 */
       color: var(--fg);
       display: flex;
       align-items: center;
       z-index: 9999;
       overflow: hidden;
+      backdrop-filter: blur(4px);   /* 轻微毛玻璃效果 */
     }
 
     .notice-inner {
@@ -57,7 +58,7 @@
 
     .notice-track {
       display: flex;
-      gap: 500px;                    /* 公告间距 */
+      gap: 48px;                    /* 公告间距 */
       white-space: nowrap;
       animation: scroll-left var(--scroll-duration) linear infinite;
       will-change: transform;
@@ -74,10 +75,9 @@
     .notice-item {
       flex: 0 0 auto;
       color: var(--fg);
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /* 文字阴影增强可读性 */
     }
 
-    .notice-item a { color: var(--link); text-decoration: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    .notice-item a { color: var(--link); text-decoration: none; }
     .notice-item a:hover { text-decoration: underline; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -99,6 +99,11 @@
       </div>
     </div>
   </div>
+
+  <main style="padding:32px 16px; max-width: 900px; margin: 0 auto;">
+    <h1>示例页面</h1>
+    <p>顶部公告会固定并持续横向滚动。将鼠标悬停在公告条上即可暂停滚动。</p>
+  </main>
 
   <script>
     (function initNoticeMarquee() {
