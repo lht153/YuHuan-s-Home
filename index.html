@@ -17,7 +17,107 @@
 
 </head>
 
+	  <style>
+    :root {
+      --bar-height: 30px;           /* 公告栏高度 */
+      --scroll-duration: 20s;       /* 完整滚动一轮的时间 */
+      --fg: #fff;                   /* 文本色 */
+      --link: #93c5fd;              /* 链接色 */
+    }
+
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, PingFang SC, Noto Sans CJK SC, "Microsoft YaHei", Arial, sans-serif; }
+    body::before { content: ""; display: block; height: var(--bar-height); }
+
+    .notice-bar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: var(--bar-height);
+      background: transparent;      /* 背景透明 */
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .notice-inner {
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .notice-viewport {
+      width: 100%;
+      height: var(--bar-height);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .notice-track {
+      display: flex;
+      gap: 500px;                    /* 公告间距 */
+      white-space: nowrap;
+      animation: scroll-left var(--scroll-duration) linear infinite;
+      will-change: transform;
+    }
+
+    .notice-bar:hover .notice-track,
+    .notice-track:hover { animation-play-state: paused; }
+
+    @keyframes scroll-left {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); } /* 因为克隆一遍，宽度变两倍 */
+    }
+
+    .notice-item {
+      flex: 0 0 auto;
+      color: var(--fg);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /* 文字阴影增强可读性 */
+    }
+
+    .notice-item a { color: var(--link); text-decoration: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    .notice-item a:hover { text-decoration: underline; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .notice-track { animation: none; }
+    }
+  </style>
+
 <body>
+
+<div class="notice-bar" role="region" aria-label="网站公告">
+    <div class="notice-inner">
+      <div class="notice-viewport" aria-live="polite">
+        <div class="notice-track" id="noticeTrack">
+          <div class="notice-item">🎉 <b>七夕快乐</b>！七夕良宵，愿你所遇皆良人，所念皆回应，所愿皆成真。 🎉</div>
+		  <div class="notice-item">🎉 欢迎来到我的主页！</div>
+          <div class="notice-item"><a href='https://tv.317188.xyz'>YuHuanTV | 你的下一个影视站</a>（自营）不管是电影、电视剧还是动漫 无需注册 统统免费看</div>
+          <div class="notice-item">📢 查看我的博客，获取最新资讯！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function initNoticeMarquee() {
+      const track = document.getElementById('noticeTrack');
+      if (!track) return;
+
+      const clone = track.cloneNode(true);
+      while (clone.firstChild) track.appendChild(clone.firstChild);
+
+      const viewport = track.parentElement;
+      const pause = () => track.style.animationPlayState = 'paused';
+      const resume = () => track.style.animationPlayState = '';
+      viewport.addEventListener('mouseenter', pause);
+      viewport.addEventListener('mouseleave', resume);
+      track.addEventListener('mouseenter', pause);
+      track.addEventListener('mouseleave', resume);
+    })();
+  </script>
+	
 	<div id="zyyo-loading">
 		<div id="zyyo-loading-center">
 		</div>
@@ -204,4 +304,122 @@
 <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
 <script>LA.init({ id: "KFqltKSkJgQTGD9l", ck: "KFqltKSkJgQTGD9l" })</script>
 
+<!-- 跑马灯横幅 -->
+<div id="global-banner">
+  <div id="marquee">
+    <span id="global-banner-text"></span>
+  </div>
+  <span id="global-banner-close">&times;</span>
+</div>
+
+<style>
+/* 横幅容器 */
+#global-banner {
+  position: fixed;
+  top: 0;          /* 顶部 */
+  left: 0;
+  width: 100%;
+  height: 30px;    /* 固定高度 */
+  background: transparent; /* 全透明背景 */
+  color: #fff;
+  font-size: 14px;
+  line-height: 30px;  /* 垂直居中 */
+  padding: 0 40px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  font-family: "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+}
+
+/* 跑马灯容器 */
+#marquee {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 滚动文字 */
+#global-banner-text {
+  display: inline-block;
+  padding-left: 100%;
+  text-shadow: 
+    1px 1px 2px #000,
+    -1px -1px 2px #000,
+    1px -1px 2px #000,
+    -1px 1px 2px #000; /* 四向描边 */
+}
+
+/* 鼠标悬停暂停滚动 */
+#global-banner:hover #global-banner-text {
+  animation-play-state: paused;
+}
+
+/* 滚动效果关键帧 */
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* 关闭按钮 */
+#global-banner-close {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 20px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+}
+#global-banner-close:hover {
+  color: #ff4444;
+}
+</style>
+
+<script>
+// ================== 配置 ==================
+// 滚动速度（每条消息滚动时间，秒）
+const scrollSpeed = 20;
+
+// 切换下一条消息的间隔（秒）
+const switchInterval = 20;
+
+// 消息数组（支持 HTML 标签）
+const bannerMessages = [
+  "🎉 <b>七夕快乐</b>！七夕良宵，愿你所遇皆良人，所念皆回应，所愿皆成真。 🎉",
+  "🔥 <a href='https://tv.317188.xyz'>YuHuanTV | 你的下一个影视站</a>（自营）不管是电影、电视剧还是动漫 无需注册 统统免费看 🔥",
+  "📢 订阅博客<a href='/feed'>RSS</a>，获取最新资讯！",
+  "💡 小提示：博客支持夜间模式，更护眼哦 💡"
+];
+
+// ================== 逻辑 ==================
+let currentIndex = 0;
+const bannerText = document.getElementById("global-banner-text");
+
+function updateMessage() {
+  bannerText.innerHTML = bannerMessages[currentIndex];
+  // 重置动画
+  bannerText.style.animation = "none";
+  bannerText.offsetHeight; // 强制重绘
+  bannerText.style.animation = null;
+  bannerText.style.animation = `marquee ${scrollSpeed}s linear infinite`; // 单条滚动速度
+  currentIndex = (currentIndex + 1) % bannerMessages.length;
+}
+
+// 初始显示
+updateMessage();
+
+// 定时切换（独立于滚动速度）
+setInterval(updateMessage, switchInterval * 1000);
+
+// 关闭横幅
+document.getElementById("global-banner-close").onclick = function() {
+  document.getElementById("global-banner").style.display = "none";
+};
+</script>
+
+	
 </html>
